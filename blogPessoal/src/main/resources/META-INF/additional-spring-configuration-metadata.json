@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "spring.jpa.hibernate.ddl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.jpa.hibernate.ddl'"
+  },
+  {
+    "name": "datasource.url",
+    "type": "java.lang.String",
+    "description": "A description for 'datasource.url'"
+  },
+  {
+    "name": "spring.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.password'"
+  }
+]}
