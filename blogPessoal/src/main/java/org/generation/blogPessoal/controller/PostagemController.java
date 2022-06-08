@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController //Criar controller
 @RequestMapping("/postagens") //Criar Endpoint
-@CrossOrigin("*") //Habilida a API a receber requisição de qualquer porta
+@CrossOrigin(origins ="*", allowedHeaders ="*") //Habilida a API a receber requisição de qualquer porta
 public class PostagemController {
 
 	@Autowired //Injeção de dependência/transferência de responsabilidade (para que não tenha que ficar repetindo os códigos do repository, ele já instancia o repository sozinho sempre que for usar o repository)
