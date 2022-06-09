@@ -45,17 +45,16 @@ public class UsarioController {
 	}
 	
 	@PostMapping("/logar")
-	public ResponseEntity<UsuarioLogin> login(@Valid @RequestBody Optional<UsuarioLogin> user){
-		return usuarioService.autenticarUsuario(user)
-				.map(resposta -> ResponseEntity.ok(resposta))
+	public ResponseEntity<UsuarioLogin> autentication(@RequestBody Optional<UsuarioLogin> usuarioLogin){
+		return usuarioService.Logar(usuarioLogin)
+				.map(usuario->ResponseEntity.ok(usuario))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 	
 	@PostMapping("/cadastrar")
-	public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario){
-		return usuarioService.cadastrarUsuario(usuario)
-				.map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(resposta))
-				.orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+	public ResponseEntity<Usuario> Post (@Valid @RequestBody Usuario usuarioLogin){
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(usuarioService.cadastrarUsuario(usuarioLogin));
 	}
 	
 	@PutMapping
