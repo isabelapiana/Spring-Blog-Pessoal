@@ -52,9 +52,9 @@ public class UsarioController {
 	}
 	
 	@PostMapping("/cadastrar")
-	public ResponseEntity<Usuario> Post (@Valid @RequestBody Usuario usuarioLogin){
+	public ResponseEntity<Usuario> Post (@Valid @RequestBody Usuario usuario){
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(usuarioService.cadastrarUsuario(usuarioLogin));
+				.body(usuarioService.cadastrarUsuario(usuario));
 	}
 	
 	@PutMapping
