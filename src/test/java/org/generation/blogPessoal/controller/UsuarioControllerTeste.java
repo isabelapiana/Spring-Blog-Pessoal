@@ -84,10 +84,10 @@ public class UsuarioControllerTeste {
 	@DisplayName("Atualizar um Usuário")
 	public void deveAtualizarUmUsuario() {
 
-		Optional<Usuario> usuarioCadastrado = usuarioService.cadastrarUsuario(new Usuario(0L, 
+		Usuario usuarioCadastrado = usuarioService.cadastrarUsuario(new Usuario(0L, 
 			"Juliana Andrews", "juliana_andrews@email.com.br", "juliana123", "https://i.imgur.com/yDRVeK7.jpg"));
 
-		Usuario usuarioUpdate = new Usuario(usuarioCadastrado.get().getId(), 
+		Usuario usuarioUpdate = new Usuario(usuarioCadastrado.getId(), 
 			"Juliana Andrews Ramos", "juliana_ramos@email.com.br", "juliana123" , "https://i.imgur.com/yDRVeK7.jpg");
 		
 		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(usuarioUpdate);
@@ -124,11 +124,11 @@ public class UsuarioControllerTeste {
 	@Order(5)
 	@DisplayName("Listar Um Usuário Específico")
 	public void deveListarApenasUmUsuario() {
-		Optional<Usuario> usuarioBusca = usuarioService.cadastrarUsuario(new Usuario(0L, 
+		Usuario usuarioBusca = usuarioService.cadastrarUsuario(new Usuario(0L, 
 				"Laura Santolia", "laura_santolia@email.com.br", "laura12345", "https://i.imgur.com/EcJG8kB.jpg"));
 		ResponseEntity<String> resposta = testRestTemplate
 				.withBasicAuth("root", "root")
-				.exchange("/usuarios/" + usuarioBusca.get().getId(), HttpMethod.GET, null, String.class);
+				.exchange("/usuarios/" + usuarioBusca.getId(), HttpMethod.GET, null, String.class);
 		assertEquals(HttpStatus.OK, resposta.getStatusCode());
 	}
 	@Test
