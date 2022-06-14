@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -23,40 +24,39 @@ public class Usuario {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
-	@NotNull
-	@Size(min=5,max=100)
+	private Long id;
+
+	@NotNull(message = "O atributo Nome é Obrigatório!")
 	private String nome;
-	
+
+	@Size(max = 5000, 
+	message = "O link da foto não pode ser maior do que 5000 caracteres")
+	private String foto;
+
 	@Schema(example = "email@email.com.br")
 	@NotNull(message = "O atributo Usuário é Obrigatório!")
 	@Email(message = "O atributo Usuário deve ser um email válido!")
 	private String usuario;
-	
-	@NotNull
-	@Size(min=5, max=100)
+
+	@NotBlank(message = "O atributo Senha é Obrigatório!")
+	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
 	private String senha;
-	
-	private String foto;
 
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("usuario")
 	private List<Postagem> postagem;
-	
-	public Usuario(Long id, @NotNull @Size(min = 5, max = 100) String nome,
-			@NotNull @Size(min = 5, max = 100) String usuario, @NotNull @Size(min = 5, max = 100) String senha,
-			String foto) {
-		super();
+
+
+	public Usuario(Long id, String nome, String foto, String usuario, String senha) {
 		this.id = id;
 		this.nome = nome;
+		this.foto = foto;
 		this.usuario = usuario;
 		this.senha = senha;
-		this.foto = foto;
 	}
-
-	public Usuario() {}
-
+	
+	public Usuario() { }
+	
 	public Long getId() {
 		return id;
 	}
@@ -71,6 +71,14 @@ public class Usuario {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 
 	public String getUsuario() {
@@ -89,14 +97,6 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public String getFoto() {
-		return foto;
-	}
-
-	public void setFoto(String foto) {
-		this.foto = foto;
-	}
-
 	public List<Postagem> getPostagem() {
 		return postagem;
 	}
@@ -104,5 +104,5 @@ public class Usuario {
 	public void setPostagem(List<Postagem> postagem) {
 		this.postagem = postagem;
 	}
-	
+
 }

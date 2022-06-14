@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 
 import org.generation.blogPessoal.model.Usuario;
-import org.generation.blogPessoal.model.UsuarioLogin;
 import org.generation.blogPessoal.repository.UsuarioRepository;
 import org.generation.blogPessoal.service.UsuarioService;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +23,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -40,26 +38,27 @@ public class UsuarioControllerTeste {
 	private UsuarioRepository usuarioRepository;
 
 	@BeforeAll
-	void start(){
+	void start() {
 
 		usuarioRepository.deleteAll();
-	}
 
+	}
+	
 	@Test
 	@Order(1)
 	@DisplayName("Cadastrar Um Usuário")
 	public void deveCriarUmUsuario() {
 
-		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(new Usuario(0L, 
-			"Paulo Antunes", "paulo_antunes@email.com.br", "13465278", "https://i.imgur.com/JR7kUFU.jpg"));
+		HttpEntity<Usuario> requisicao = new HttpEntity<Usuario>(new Usuario(0L, 
+			"Paulo Antunes", "https://i.imgur.com/FETvs2O.jpg", "paulo_antunes@email.com.br", "13465278"));
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
-			.exchange("/usuarios/cadastrar", HttpMethod.POST, corpoRequisicao, Usuario.class);
+		ResponseEntity<Usuario> resposta = testRestTemplate
+			.exchange("/usuarios/cadastrar", HttpMethod.POST, requisicao, Usuario.class);
 
-		assertEquals(HttpStatus.CREATED, corpoResposta.getStatusCode());
-		assertEquals(corpoRequisicao.getBody().getNome(), corpoResposta.getBody().getNome());
-		assertEquals(corpoRequisicao.getBody().getUsuario(), corpoResposta.getBody().getUsuario());
-	
+		assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
+		assertEquals(requisicao.getBody().getNome(), resposta.getBody().getNome());
+		assertEquals(requisicao.getBody().getFoto(), resposta.getBody().getFoto());
+		assertEquals(requisicao.getBody().getUsuario(), resposta.getBody().getUsuario());
 	}
 
 	@Test
@@ -68,37 +67,38 @@ public class UsuarioControllerTeste {
 	public void naoDeveDuplicarUsuario() {
 
 		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Maria da Silva", "maria_silva@email.com.br", "13465278", "https://i.imgur.com/T12NIp9.jpg"));
+			"Maria da Silva", "https://i.imgur.com/NtyGneo.jpg", "maria_silva@email.com.br", "13465278"));
 
-		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(new Usuario(0L, 
-			"Maria da Silva", "maria_silva@email.com.br", "13465278", "https://i.imgur.com/T12NIp9.jpg"));
+		HttpEntity<Usuario> requisicao = new HttpEntity<Usuario>(new Usuario(0L, 
+			"Maria da Silva", "https://i.imgur.com/NtyGneo.jpg", "maria_silva@email.com.br", "13465278"));
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
-			.exchange("/usuarios/cadastrar", HttpMethod.POST, corpoRequisicao, Usuario.class);
+		ResponseEntity<Usuario> resposta = testRestTemplate
+			.exchange("/usuarios/cadastrar", HttpMethod.POST, requisicao, Usuario.class);
 
-		assertEquals(HttpStatus.BAD_REQUEST, corpoResposta.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
 	}
 
 	@Test
 	@Order(3)
-	@DisplayName("Atualizar um Usuário")
+	@DisplayName("Alterar um Usuário")
 	public void deveAtualizarUmUsuario() {
 
-		Usuario usuarioCadastrado = usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Juliana Andrews", "juliana_andrews@email.com.br", "juliana123", "https://i.imgur.com/yDRVeK7.jpg"));
+		Optional<Usuario> usuarioCreate = usuarioService.cadastrarUsuario(new Usuario(0L, 
+			"Juliana Andrews", "https://i.imgur.com/yDRVeK7.jpg", "juliana_andrews@email.com.br", "juliana123"));
 
-		Usuario usuarioUpdate = new Usuario(usuarioCadastrado.getId(), 
-			"Juliana Andrews Ramos", "juliana_ramos@email.com.br", "juliana123" , "https://i.imgur.com/yDRVeK7.jpg");
+		Usuario usuarioUpdate = new Usuario(usuarioCreate.get().getId(), 
+			"Juliana Andrews Ramos", "https://i.imgur.com/T12NIp9.jpg", "juliana_ramos@email.com.br", "juliana123");
 		
-		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>(usuarioUpdate);
+		HttpEntity<Usuario> requisicao = new HttpEntity<Usuario>(usuarioUpdate);
 
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate
+		ResponseEntity<Usuario> resposta = testRestTemplate
 			.withBasicAuth("root", "root")
-			.exchange("/usuarios/atualizar", HttpMethod.PUT, corpoRequisicao, Usuario.class);
+			.exchange("/usuarios/atualizar", HttpMethod.PUT, requisicao, Usuario.class);
 
-		assertEquals(HttpStatus.OK, corpoResposta.getStatusCode());
-		assertEquals(corpoRequisicao.getBody().getNome(), corpoResposta.getBody().getNome());
-		assertEquals(corpoRequisicao.getBody().getUsuario(), corpoResposta.getBody().getUsuario());
+		assertEquals(HttpStatus.OK, resposta.getStatusCode());
+		assertEquals(usuarioUpdate.getNome(), resposta.getBody().getNome());
+		assertEquals(usuarioUpdate.getFoto(), resposta.getBody().getFoto());
+		assertEquals(usuarioUpdate.getUsuario(), resposta.getBody().getUsuario());
 	}
 
 	@Test
@@ -107,41 +107,16 @@ public class UsuarioControllerTeste {
 	public void deveMostrarTodosUsuarios() {
 
 		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Sabrina Sanches", "sabrina_sanches@email.com.br", "sabrina123", "https://i.imgur.com/5M2p5Wb.jpg"));
+			"Sabrina Sanches", "https://i.imgur.com/EcJG8kB.jpg", "sabrina_sanches@email.com.br", "sabrina123"));
 		
 		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Ricardo Marques", "ricardo_marques@email.com.br", "ricardo123", "https://i.imgur.com/Sk5SjWE.jpg"));
+			"Ricardo Marques", "https://i.imgur.com/Sk5SjWE.jpg", "ricardo_marques@email.com.br", "ricardo123"));
 
 		ResponseEntity<String> resposta = testRestTemplate
 			.withBasicAuth("root", "root")
 			.exchange("/usuarios/all", HttpMethod.GET, null, String.class);
 
 		assertEquals(HttpStatus.OK, resposta.getStatusCode());
-
-	}
-	
-	@Test
-	@Order(5)
-	@DisplayName("Listar Um Usuário Específico")
-	public void deveListarApenasUmUsuario() {
-		Usuario usuarioBusca = usuarioService.cadastrarUsuario(new Usuario(0L, 
-				"Laura Santolia", "laura_santolia@email.com.br", "laura12345", "https://i.imgur.com/EcJG8kB.jpg"));
-		ResponseEntity<String> resposta = testRestTemplate
-				.withBasicAuth("root", "root")
-				.exchange("/usuarios/" + usuarioBusca.getId(), HttpMethod.GET, null, String.class);
-		assertEquals(HttpStatus.OK, resposta.getStatusCode());
-	}
-	@Test
-	@Order(6)
-	@DisplayName("Login do Usuário")
-	public void deveAutenticarUsuario() {
-		usuarioService.cadastrarUsuario(new Usuario(0L, 
-				"Marisa Souza", "marisa_souza@email.com.br", "13465278", "https://i.imgur.com/T12NIp9.jpg"));
-		HttpEntity<UsuarioLogin> corpoRequisicao = new HttpEntity<UsuarioLogin>(new UsuarioLogin(0L, 
-				"", "marisa_souza@email.com.br", "13465278", "", ""));
-		ResponseEntity<UsuarioLogin> corpoResposta = testRestTemplate
-				.exchange("/usuarios/logar", HttpMethod.POST, corpoRequisicao, UsuarioLogin.class);
-		assertEquals(HttpStatus.OK, corpoResposta.getStatusCode());
 	}
 
 }
