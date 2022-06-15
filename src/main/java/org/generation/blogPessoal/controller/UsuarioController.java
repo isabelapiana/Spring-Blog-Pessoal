@@ -66,4 +66,5 @@ public class UsuarioController {
 			.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 
+
 }
